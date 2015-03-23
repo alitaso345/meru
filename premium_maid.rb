@@ -29,6 +29,7 @@ class PremiumMaid
 
   private
   def parse_text(text)
-    text
+    text.gsub!(/(\n|\r)/, "").strip!
+    text if text != ""
   end
 end
