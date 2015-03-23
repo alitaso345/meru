@@ -1,5 +1,6 @@
 require 'nokogiri'
 require 'open-uri'
+require 'json'
 
 class PremiumMaid
   def initialize
@@ -24,7 +25,7 @@ class PremiumMaid
       dic.push(info)
     end
 
-    dic
+    dic.to_json
   end
 
   private
