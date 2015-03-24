@@ -16,7 +16,8 @@ Anemone.crawl(urls, :depth_limit  => 1, :skip_query_strings => true) do |anemone
   #巡回先の絞り込み
   anemone.focus_crawl do |page|
     page.links.keep_if{ |link|
-      link.to_s.match(/http:\/\/www.cafe-athome.com\/maids\//) 
+      # /donki/や/free/といった文字も何故か含まれてしまうので要修正
+      link.to_s.match(/http:\/\/www.cafe-athome.com\/maids\/\d{1,}/)
     }
   end
 
