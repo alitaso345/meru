@@ -2,12 +2,26 @@
 require 'anemone'
 require 'nokogiri'
 
+#クロールの起点となるURLを指定
 urls = [
-  premium = 'http://www.cafe-athome.com/maids/free/'
-  7f_maid = 'http://www.cafe-athome.com/maids/honten7f/'
-  6f_maid = 'http://www.cafe-athome.com/maids/honte16f/'
-  4f_maid = 'http://www.cafe-athome.com/maids/honten4f/'
-  donki_maid = 'http://www.cafe-athome.com/maids/donki/'
-  new_maid = 'http://www.cafe-athome.com/maids/new/'
+  'http://www.cafe-athome.com/maids/free/',
+  'http://www.cafe-athome.com/maids/honten7f/',
+  'http://www.cafe-athome.com/maids/honte16f/',
+  'http://www.cafe-athome.com/maids/honten4f/',
+  'http://www.cafe-athome.com/maids/donki/',
+  'http://www.cafe-athome.com/maids/new/'
 ]
 
+Anemone.crawl(urls, :depth_limit  => 1, :skip_query_strings => true) do |anemone|
+  #巡回先の絞り込み
+  anemone.focus_crawl do |page|
+    page.links.keep_if{ |link|
+      link.to_s.match(/http:\/\/www.cafe-athome.com\/maids\//) 
+    }
+  end
+
+  #取得したページに対する処理
+  anemone.on_every_page do |page|
+    puts page.url
+  end
+end
