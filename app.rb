@@ -1,4 +1,6 @@
-require_relative "./premium_maid"
+require_relative "premium_maid"
+require_relative "crawler"
 
 maid = PremiumMaid.new
-p maid.get_json
+puts maid.get_json
+Crawler.start
