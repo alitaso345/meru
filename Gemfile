@@ -1,4 +1,8 @@
 # A sample Gemfile
 source "https://rubygems.org"
 
-# gem "rails"
+gem "dotenv"
+gem "twitter"
+gem "anemone"
+gem "nokogiri"
+gem "tesseract"
