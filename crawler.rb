@@ -3,46 +3,56 @@ require 'anemone'
 require 'nokogiri'
 
 class Crawler
-  def self.start
-    #クロールの起点となるURLを指定
-    urls = [
-      'http://www.cafe-athome.com/maids/free/',
-      'http://www.cafe-athome.com/maids/honten7f/',
-      'http://www.cafe-athome.com/maids/honte16f/',
-      'http://www.cafe-athome.com/maids/honten4f/',
-      'http://www.cafe-athome.com/maids/donki/',
-      'http://www.cafe-athome.com/maids/new/'
-    ]
+  def initialize
+    @maides_list = Array.new
+  end
 
-    Anemone.crawl(urls, :depth_limit  => 1, :skip_query_strings => true) do |anemone|
-      #巡回先の絞り込み
-      anemone.focus_crawl do |page|
-        page.links.keep_if{ |link|
-          link.to_s.match(/http:\/\/www.cafe-athome.com\/maids/)
-        }
-      end
+  def start
+    begin
+      #クロールの起点となるURLを指定
+      urls = [
+        'http://www.cafe-athome.com/maids/free/',
+        'http://www.cafe-athome.com/maids/honten7f/',
+        'http://www.cafe-athome.com/maids/honte16f/',
+        'http://www.cafe-athome.com/maids/honten4f/',
+        'http://www.cafe-athome.com/maids/donki/',
+        'http://www.cafe-athome.com/maids/new/'
+      ]
 
-      #取得したページに対する処理
-      anemone.on_pages_like(/maids\/\d{1,}/) do |page|
-        doc = Nokogiri::HTML.parse(page.body)
+      Anemone.crawl(urls, :depth_limit  => 1, :skip_query_strings => true) do |anemone|
+        #巡回先の絞り込み
+        anemone.focus_crawl do |page|
+          page.links.keep_if{ |link|
+            link.to_s.match(/http:\/\/www.cafe-athome.com\/maids/)
+          }
+        end
 
-        info = Hash.new
-        info[:id] = page.url.to_s.match(/\d{2,}/)
-        info[:name] = doc.xpath("//div[@id='maid-name']").text
-        info[:twitter_account] = doc.xpath("//div[@id='maid-properties']/dl/dd")[2].text
+        #取得したページに対する処理
+        anemone.on_pages_like(/maids\/\d{1,}/) do |page|
+          doc = Nokogiri::HTML.parse(page.body)
 
-        print_maid_info(info)
-      end
+          info = Hash.new
+          info[:maid_number] = page.url.to_s.match(/\d{2,}/).to_s
+          info[:name] = doc.xpath("//div[@id='maid-name']").text
+          info[:twitter_account] = doc.xpath("//*[@id='maid-properties']/dl[3]/dd/a").to_s.match(/com\/(.+?)"/).to_s.delete('com/').delete('"') || nil
+          info[:floor] = doc.xpath("//*[@id='maid-properties']/dl[1]/dd/a[1]").text
+          @maides_list << info
+        end
+      end 
+      print_maid_info
+    rescue => e
+      p e
     end
+
   end
 
   private
-  def self.print_maid_info(info)
-    if info[:twitter_account].match(/^@/)
-      puts "#{info[:name]} #{info[:twitter_account]} id:#{info[:id]}"
-    else
-      puts "#{info[:name]} no twitter account id:#{info[:id]}"
+  def print_maid_info
+    @maides_list.each do |maid|
+      puts maid
     end
   end
 end
 
+crawler = Crawler.new
+crawler.start
