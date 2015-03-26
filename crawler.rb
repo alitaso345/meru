@@ -37,7 +37,9 @@ class Crawler
           info = Hash.new
           info[:maid_number] = page.url.to_s.match(/\d{2,}/).to_s
           info[:name] = doc.xpath("//div[@id='maid-name']").text
-          info[:twitter_account] = doc.xpath("//*[@id='maid-properties']/dl[3]/dd/a").to_s.delete('https://twitter.com/') || nil
+          doc.xpath("//*[@id='maid-properties']/dl[3]/dd/a").each do |node|
+            info[:twitter_account] = node.attributes["href"].text.to_s.gsub(/https:\/\/twitter.com\//, "")
+          end
           info[:floor] = doc.xpath("//*[@id='maid-properties']/dl[1]/dd/a[1]").text
           @maides_list << info
         end

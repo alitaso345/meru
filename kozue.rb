@@ -17,7 +17,6 @@ class Kozue
       @console.info("Start get image from twitter")
 
       maides_list.each do |maid|
-        p  maid
         get_all_tweets(maid[:twitter_account]).each do |tweet|
           @log.info(print_tweet(maid, tweet)) 
           print_tweet(maid, tweet)
