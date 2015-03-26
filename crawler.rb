@@ -1,14 +1,17 @@
 #メイドさんの公式Twitterアカウントを取得するためのスクリプト
 require 'anemone'
 require 'nokogiri'
+require 'logger'
 
 class Crawler
   def initialize
-    @maides_list = Array.new
+    @maides_list = []
+    @console = Logger.new(STDOUT)
   end
 
-  def start
+  def get_maides_info
     begin
+      @console.info("Start crawl @homecafe")
       #クロールの起点となるURLを指定
       urls = [
         'http://www.cafe-athome.com/maids/free/',
@@ -34,16 +37,16 @@ class Crawler
           info = Hash.new
           info[:maid_number] = page.url.to_s.match(/\d{2,}/).to_s
           info[:name] = doc.xpath("//div[@id='maid-name']").text
-          info[:twitter_account] = doc.xpath("//*[@id='maid-properties']/dl[3]/dd/a").to_s.match(/com\/(.+?)"/).to_s.delete('com/').delete('"') || nil
+          info[:twitter_account] = doc.xpath("//*[@id='maid-properties']/dl[3]/dd/a").to_s.delete('https://twitter.com/') || nil
           info[:floor] = doc.xpath("//*[@id='maid-properties']/dl[1]/dd/a[1]").text
           @maides_list << info
         end
       end 
-      print_maid_info
+      @console.info("Finish crawl")
+      @maides_list
     rescue => e
       p e
     end
-
   end
 
   private
@@ -53,6 +56,3 @@ class Crawler
     end
   end
 end
-
-crawler = Crawler.new
-crawler.start
