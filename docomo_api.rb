@@ -13,6 +13,9 @@ response = RestClient.post(
   :content_type => 'multipart/form-data'
 )
 
-json=JSON.parser.new(response)
-hash=json.parse()
-p hash
+json = JSON.parser.new(response)
+hash = json.parse()
+
+parsed = hash['job']
+id = parsed['@id']
+p id
