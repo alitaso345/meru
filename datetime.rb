@@ -2,9 +2,9 @@
 require 'date'
 def jpndate(str)
   today = Date.today
-  year = today.year
-  month = today.month
-  day = today.day
+  year = 9999
+  month = 12
+  day = 31
   str.scan(/(午前|午後)?(\d+)(年|月|日)/) do
     case $3
     when "年"
@@ -18,3 +18,4 @@ def jpndate(str)
   return Date.new(year, month, day).to_s
 end
 
+p jpndate('11:42')

@@ -1,4 +1,5 @@
 # 文字認識docomoAPIで画像の中の文章を取得するスクリプト
+#encoding: UTF-16
 require 'rest_client'
 require 'json'
 require_relative "datetime"
@@ -50,7 +51,19 @@ class DocomoAPI
     # 得られたjsonのうち@textのみ出力
     text =  $hash['lines']['line']   
     text.each do |text|
-      p jpndate((text['@text']).gsub(" ", ""))rescue nil
+      p pattern(text['@text']) rescue nil
+      #p jpndate((text['@text']).gsub(" ", ""))rescue nil
     end
   end
 end
+def pattern(str)
+  str.gsub!(/[旧碑〇丨|I]/,
+            "旧"=>"1日",
+            "碑"=>"4年",
+            "〇"=>"0",
+            /[丨|I]/=>"1")
+  str.gsub(" ","")
+end
+
+private
+
