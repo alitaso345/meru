@@ -19,8 +19,7 @@ response = RestClient.post(
 json = JSON.parser.new(response)
 hash = json.parse()
 
-parsed = hash['job']
-id = parsed['@id']
+id = hash['job']['@id']
 uri.path += "/" +  id
 
 loop do
@@ -28,10 +27,14 @@ loop do
   json2 = JSON.parser.new(result)
   $hash2 = json2.parse()
   if $hash2['job']['@status']=="success"
-    p $hash2
     break
   elsif $hash2['job']['@status']!="process"
     p "失敗もしくは削除済みです"
-    break
+    exit
   end
+end
+
+text =  $hash2['lines']['line']
+text.each do |text|
+  p text['@text'] rescue nil
 end
