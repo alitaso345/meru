@@ -43,6 +43,7 @@ PLATFORMS
 DEPENDENCIES
   anemone
   dotenv
+  json
   nokogiri
   tesseract
   twitter
