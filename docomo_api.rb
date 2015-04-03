@@ -21,10 +21,12 @@ hash = json.parse()
 
 parsed = hash['job']
 id = parsed['@id']
-
 uri.path += "/" +  id
-result = RestClient.get(uri.to_s)
+loop do
+  result = RestClient.get(uri.to_s)
+  json2 = JSON.parser.new(result)
+  $hash2 = json2.parse()
+  break if $hash2['job']['@status']=="success"
+end
 
-json2 = JSON.parser.new(result)
-hash2 = json2.parse()
-p hash2
+p $hash2
