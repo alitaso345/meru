@@ -5,5 +5,4 @@ image=GetShift.new
 ocr=DocomoAPI.new
 
 image.get_shift_img("mmmlln")
-ocr.get_ocr
 

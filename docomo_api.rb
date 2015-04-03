@@ -1,3 +1,4 @@
+# 文字認識docomoAPIで画像の中の文章を取得するスクリプト
 require 'rest_client'
 require 'json'
 
@@ -29,7 +30,6 @@ class DocomoAPI
 
   ###   画像認識結果取得   ###
   def get_ocr
-    req_ocr('shift_kozue.jpg')
     @uri.path += "/" +  @id
 
     loop do
@@ -43,6 +43,7 @@ class DocomoAPI
         p "失敗もしくは削除済みです"
         exit
       end
+      sleep(0.5)#連続してRestClientすると怒られるのでお休み
     end
 
     # 得られたjsonのうち@textのみ出力
