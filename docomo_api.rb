@@ -52,6 +52,3 @@ class DocomoAPI
     end
   end
 end
-
-ocr=DocomoAPI.new
-ocr.get_ocr
