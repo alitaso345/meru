@@ -1,4 +1,5 @@
 require 'rest_client'
+require 'json'
 
 API_KEY = ENV['DOCOMO_API_KEY']
 
@@ -12,4 +13,6 @@ response = RestClient.post(
   :content_type => 'multipart/form-data'
 )
 
-p response
+json=JSON.parser.new(response)
+hash=json.parse()
+p hash
