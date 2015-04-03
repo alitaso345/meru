@@ -24,4 +24,7 @@ id = parsed['@id']
 
 uri.path += "/" +  id
 result = RestClient.get(uri.to_s)
-p result
+
+json2 = JSON.parser.new(result)
+hash2 = json2.parse()
+p hash2
