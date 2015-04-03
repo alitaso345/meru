@@ -6,6 +6,7 @@ API_KEY = ENV['DOCOMO_API_KEY']
 ###   情景画像認識要求   ###
 uri = URI('https://api.apigw.smt.docomo.ne.jp/characterRecognition/v1/scene')
 uri.query = 'APIKEY=' + API_KEY
+
 response = RestClient.post(
   uri.to_s,
   {:image => File.open('shift_kozue.jpg'),
@@ -20,4 +21,7 @@ hash = json.parse()
 
 parsed = hash['job']
 id = parsed['@id']
-p id
+
+uri.path += "/" +  id
+result = RestClient.get(uri.to_s)
+p result
