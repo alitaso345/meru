@@ -18,4 +18,3 @@ def jpndate(str)
   return Date.new(year, month, day).to_s
 end
 
-p jpndate("2015年3月20日(金)")
