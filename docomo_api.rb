@@ -4,7 +4,7 @@ require 'json'
 API_KEY = ENV['DOCOMO_API_KEY']
 
 ###   情景画像認識要求   ###
-uri = URI('https://api.apigw.smt.docomo.ne.jp/characterRecognition/v1/scene')
+uri = URI('https://api.apigw.smt.docomo.ne.jp/characterRecognition/v1/document')
 uri.query = 'APIKEY=' + API_KEY
 
 response = RestClient.post(
