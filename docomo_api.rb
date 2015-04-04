@@ -2,7 +2,6 @@
 require 'rest_client'
 require 'json'
 require 'date'
-require_relative "datetime"
 
 API_KEY = ENV['DOCOMO_API_KEY']
 
@@ -49,7 +48,8 @@ class DocomoAPI
     # 得られたjsonのうち@textのみ出力
     text =  @hash['lines']['line']   
     text.each do |text|
-      p pattern(text['@text']) rescue nil
+      # pattern(text['@text']) rescue nil
+      p jpndate(pattern(text['@text'])) rescue nil
     end
   end
 end
@@ -67,19 +67,21 @@ end
 
 #日付の文字列(XXXX年YY月ZZ日)からdateオブジェクトを得る
 def jpndate(str)
-  today = Date.today
-  year = 9999
-  month = 12
-  day = 31
-  str.scan(/(午前|午後)?(\d+)(年|月|日)/) do
-    case $3
+  @year=@month=@day=999999
+  str.scan(/(\d+)(年|月|日)/) do
+    case 
     when "年"
-      year = $2.to_i
+      @year = $1.to_i
     when "月"
-      month = $2.to_i
+      @month = $1.to_i
     when "日"
-      day = $2.to_i
+      @day = $1.to_i
     end
   end
-  return Date.new(year, month, day).to_s
+  # 得られた日付が存在する場合のみdateオブジェクトを返す
+  if Date.valid_date?(@year, @month, @day)
+    return Date.new(@year, @month, @day).to_s
+  else
+    return str
+  end
 end
