@@ -18,4 +18,3 @@ def jpndate(str)
   return Date.new(year, month, day).to_s
 end
 
-p jpndate('11:42')

@@ -1,5 +1,4 @@
 # 文字認識docomoAPIで画像の中の文章を取得するスクリプト
-#encoding: UTF-16
 require 'rest_client'
 require 'json'
 require_relative "datetime"
@@ -25,8 +24,7 @@ class DocomoAPI
     )
 
     # 得られた結果からidのみ出力
-    json = JSON.parser.new(response)
-    hash = json.parse()
+    hash = JSON.parser.new(response).parse()
     @id = hash['job']['@id']
   end
 
@@ -36,12 +34,11 @@ class DocomoAPI
 
     loop do
       result = RestClient.get(@uri.to_s)
-      json2 = JSON.parser.new(result)
-      $hash = json2.parse()
+      @hash = JSON.parser.new(result).parse()
       # 処理に成功した場合のみ処理を続行
-      if $hash['job']['@status']=="success"
+      if @hash['job']['@status']=="success"
         break
-      elsif $hash['job']['@status']!="process"
+      elsif @hash['job']['@status']!="process"
         p "失敗もしくは削除済みです"
         exit
       end
@@ -49,7 +46,7 @@ class DocomoAPI
     end
 
     # 得られたjsonのうち@textのみ出力
-    text =  $hash['lines']['line']   
+    text =  @hash['lines']['line']   
     text.each do |text|
       p pattern(text['@text']) rescue nil
       #p jpndate((text['@text']).gsub(" ", ""))rescue nil

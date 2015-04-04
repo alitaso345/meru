@@ -51,10 +51,10 @@ class GetShift
     @@client.get_all_tweets(user).each do |tweet|
       if tweet.text.index("お給仕予定")
         tweet.media.each do |media|
-          path=media.media_url.to_s          # @path=画像URL
+          path = media.media_url.to_s          # @path=画像URL
           save_file(path)                    # その画像をjpgで保存
           filename = File.basename(path)     # fileName="XXXX.jpg"
-          ocr=DocomoAPI.new                  # そのままDocomoAPIでocr
+          ocr = DocomoAPI.new                  # そのままDocomoAPIでocr
           ocr.req_ocr(filename)
           ocr.get_ocr
         end
