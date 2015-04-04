@@ -67,9 +67,9 @@ end
 
 #日付の文字列(XXXX年YY月ZZ日)からdateオブジェクトを得る
 def jpndate(str)
-  @year=@month=@day=999999
+  @year=@month=@day=0
   str.scan(/(\d+)(年|月|日)/) do
-    case 
+    case $2 
     when "年"
       @year = $1.to_i
     when "月"
