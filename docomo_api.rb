@@ -1,6 +1,7 @@
 # 文字認識docomoAPIで画像の中の文章を取得するスクリプト
 require 'rest_client'
 require 'json'
+require 'date'
 require_relative "datetime"
 
 API_KEY = ENV['DOCOMO_API_KEY']
@@ -49,18 +50,36 @@ class DocomoAPI
     text =  @hash['lines']['line']   
     text.each do |text|
       p pattern(text['@text']) rescue nil
-      #p jpndate((text['@text']).gsub(" ", ""))rescue nil
     end
   end
 end
+
+# 文章をgrepで整形
 def pattern(str)
-  str.gsub!(/[旧碑〇丨|I]/,
+  str.gsub!(/[旧碑〇丨|I）}]/,
             "旧"=>"1日",
             "碑"=>"4年",
             "〇"=>"0",
-            /[丨|I]/=>"1")
+            /[丨|I]/=>"1",
+            /[）}>]/=>")")
   str.gsub(" ","")
 end
 
-private
-
+#日付の文字列(XXXX年YY月ZZ日)からdateオブジェクトを得る
+def jpndate(str)
+  today = Date.today
+  year = 9999
+  month = 12
+  day = 31
+  str.scan(/(午前|午後)?(\d+)(年|月|日)/) do
+    case $3
+    when "年"
+      year = $2.to_i
+    when "月"
+      month = $2.to_i
+    when "日"
+      day = $2.to_i
+    end
+  end
+  return Date.new(year, month, day).to_s
+end
