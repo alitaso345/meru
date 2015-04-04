@@ -4,19 +4,16 @@ require 'dotenv'
 require 'open-uri'
 require_relative "docomo_api"
 
-Dotenv.load
-CONS_KEY = ENV['TWITTER_CONSUMER_KEY']
-CONS_SEC = ENV['TWITTER_CONSUMER_SECRET']
-ACCS_KEY = ENV['TWITTER_ACCESS_TOKEN']
-ACCS_SEC = ENV['TWITTER_ACCESS_SECRET']
-
 class GetShift
-  @@client = Twitter::REST::Client.new do |config|
-      config.consumer_key        = CONS_KEY
-      config.consumer_secret     = CONS_SEC
-      config.access_token        = ACCS_KEY
-      config.access_token_secret = ACCS_SEC
+  def initialize
+    Dotenv.load
+    @client = Twitter::REST::Client.new do |config|
+      config.consumer_key        = ENV['TWITTER_CONSUMER_KEY']
+      config.consumer_secret     = ENV['TWITTER_CONSUMER_SECRET']
+      config.access_token        = ENV['TWITTER_ACCESS_TOKEN']
+      config.access_token_secret = ENV['TWITTER_ACCESS_SECRET']
     end
+  end
 
   def collect_with_max_id(collection=[], max_id=nil, &block)
     response = yield(max_id)
@@ -25,14 +22,14 @@ class GetShift
   end
 
   # userのすべてのツイートを取得
-  def @@client.get_all_tweets(user)
+  def get_all_tweets(user)
     collect_with_max_id do |max_id|
       options = {count: 200,            #最大取得数
                  include_rts: false,    #リツイートを含めない
                  include_entities: true #URL情報を取得
       }
       options[:max_id] = max_id unless max_id.nil?
-      user_timeline(user, options)
+      @client.user_timeline(user, options)
     end
   end
 
@@ -48,7 +45,7 @@ class GetShift
 
   #userの"お給仕予定"が含まれたツイートの画像を取得
   def get_shift_img(user)
-    @@client.get_all_tweets(user).each do |tweet|
+    get_all_tweets(user).each do |tweet|
       if tweet.text.index("お給仕予定")
         tweet.media.each do |media|
           path = media.media_url.to_s          # @path=画像URL
