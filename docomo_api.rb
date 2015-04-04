@@ -52,15 +52,14 @@ class DocomoAPI
       #p jpndate((text['@text']).gsub(" ", ""))rescue nil
     end
   end
-end
-def pattern(str)
-  str.gsub!(/[旧碑〇丨|I]/,
-            "旧"=>"1日",
-            "碑"=>"4年",
-            "〇"=>"0",
-            /[丨|I]/=>"1")
-  str.gsub(" ","")
-end
 
-private
-
+  private
+  def pattern(str)
+    str.gsub!(/[旧碑〇丨|I]/,
+              "旧"=>"1日",
+              "碑"=>"4年",
+              "〇"=>"0",
+              /[丨|I]/=>"1")
+    str.gsub(" ","")
+  end
+end
