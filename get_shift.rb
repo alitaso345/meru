@@ -31,7 +31,6 @@ class GetShift
     collect_with_max_id do |max_id|
       options = {count: 200,            #最大取得数
                  include_rts: false,    #リツイートを含めない
-                 include_entities: true #URL情報を取得
       }
       options[:max_id] = max_id unless max_id.nil?
       user_timeline(user, options)
