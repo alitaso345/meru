@@ -6,7 +6,7 @@ require "rmagick"
 require_relative "docomo_api"
 include Magick
 
-class GetShift
+class Picture
   def initialize
     Dotenv.load
     @client = Twitter::REST::Client.new do |config|
@@ -54,8 +54,8 @@ class GetShift
         rg = (src.red - src.green).abs
         gb = (src.green - src.blue).abs
         br = (src.blue - src.red).abs
-        if src==white # 白の場合は何もしない
-        elsif !((rg<10*256)&&(gb<10*256)&&(br<10*256)) # グレースケール以外の場合、白で塗りつぶす
+        #if src==white # 白の場合は何もしない
+        if !((rg<10*256)&&(gb<10*256)&&(br<10*256)) # グレースケール以外の場合、白で塗りつぶす
           img.pixel_color(x,y,white)
         end
       end
