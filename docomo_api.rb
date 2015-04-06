@@ -52,46 +52,38 @@ class DocomoAPI
       p jpndate(pattern(text['@text'])) rescue nil
     end
   end
-end
-
-# 文章をgrepで整形
-def pattern(str)
-  str.gsub!(/[旧碑〇丨|I）}]/,
-            "旧"=>"1日",
-            "碑"=>"4年",
-            "〇"=>"0",
-            /[丨|I]/=>"1",
-            /[）}>]/=>")")
-  str.gsub(" ","")
-end
-
-#日付の文字列(XXXX年YY月ZZ日)からdateオブジェクトを得る
-def jpndate(str)
-  @year=@month=@day=0
-  str.scan(/(\d+)(年|月|日)/) do
-    case $2 
-    when "年"
-      @year = $1.to_i
-    when "月"
-      @month = $1.to_i
-    when "日"
-      @day = $1.to_i
-    end
-  end
-  # 得られた日付が存在する場合のみdateオブジェクトを返す
-  if Date.valid_date?(@year, @month, @day)
-    return Date.new(@year, @month, @day).to_s
-  else
-    return str
-  end
-end
 
   private
+  # 文章をgrepで整形
   def pattern(str)
-    str.gsub!(/[旧碑〇丨|I]/,
+    str.gsub!(/[旧碑〇丨|I）}]/,
               "旧"=>"1日",
               "碑"=>"4年",
               "〇"=>"0",
-              /[丨|I]/=>"1")
+              /[丨|I]/=>"1",
+              /[）}>]/=>")")
     str.gsub(" ","")
   end
+
+  #日付の文字列(XXXX年YY月ZZ日)からdateオブジェクトを得る
+  def jpndate(str)
+    @year=@month=@day=0
+    str.scan(/(\d+)(年|月|日)/) do
+      case $2 
+      when "年"
+        @year = $1.to_i
+      when "月"
+        @month = $1.to_i
+      when "日"
+        @day = $1.to_i
+      end
+    end
+    # 得られた日付が存在する場合のみdateオブジェクトを返す
+    if Date.valid_date?(@year, @month, @day)
+      return Date.new(@year, @month, @day).to_s
+    else
+      return str
+    end
+  end
+end
+
