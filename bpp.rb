@@ -1,5 +1,5 @@
-require_relative "get_shift"
+require_relative "picture"
 
-image = GetShift.new
-image.get_shift_img("mmmlln")
+picture= Picture.new
+picture.get_shift_img("mmmlln")
 
