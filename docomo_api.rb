@@ -83,5 +83,14 @@ def jpndate(str)
     return Date.new(@year, @month, @day).to_s
   else
     return str
+
+  private
+  def pattern(str)
+    str.gsub!(/[旧碑〇丨|I]/,
+              "旧"=>"1日",
+              "碑"=>"4年",
+              "〇"=>"0",
+              /[丨|I]/=>"1")
+    str.gsub(" ","")
   end
 end
