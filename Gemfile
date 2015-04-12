@@ -8,3 +8,5 @@ gem "nokogiri"
 gem "tesseract"
 gem "json"
 gem "rest_client"
+gem "rmagick",'2.14.0'
+
