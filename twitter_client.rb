@@ -22,7 +22,6 @@ class TwitterClient
     end
   end
 
-  private
   def get_all_tweets(user)
     collect_with_max_id do |max_id|
       options = {count: 200, include_rts: true}
@@ -31,6 +30,7 @@ class TwitterClient
     end
   end
 
+  private
   def print_tweet(maid, tweet)
     p "#{maid[:name]}: #{tweet.text}"
   end
