@@ -1,6 +1,6 @@
 require "twitter"
 
-class Kozue
+class TwitterClient
   def initialize
     @client = Twitter::REST::Client.new do |config|
       config.consumer_key        = ENV['TWITTER_CONSUMER_KEY']
@@ -8,21 +8,15 @@ class Kozue
       config.access_token        = ENV['TWITTER_ACCESS_TOKEN']
       config.access_token_secret = ENV['TWITTER_ACCESS_TOKEN_SECRET']
     end
-    @console = Logger.new(STDOUT)
-    @log = Logger.new("output.log")
   end
 
   def get_image_from_twitter(maides_list)
     begin
-      @console.info("Start get image from twitter")
-
       maides_list.each do |maid|
         get_all_tweets(maid[:twitter_account]).each do |tweet|
-          @log.info(print_tweet(maid, tweet)) 
           print_tweet(maid, tweet)
         end
       end
-      @console.info("Finish crawl twitter")
     rescue => e
       p e
     end
