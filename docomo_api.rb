@@ -8,15 +8,34 @@ API_KEY = ENV['DOCOMO_API_KEY']
 class DocomoAPI
   def initialize
     @id = 0
-    @uri = URI('https://api.apigw.smt.docomo.ne.jp/characterRecognition/v1/document')
+    @document_uri = URI('https://api.apigw.smt.docomo.ne.jp/characterRecognition/v1/document')
+    @face_detection_uri = URI('https://api.apigw.smt.docomo.ne.jp/puxImageRecognition/v1/faceDetection')
+  end
+
+  def req_face_detection(picture)
+    @face_detection_uri.query = 'APIKEY=' + API_KEY
+    options = {
+      :inputFile => picture,
+      :optionFlgMinFaceWidth => 1,
+      :blinkJudge => 0,
+      :angleJudgej => 0,
+      :smileJudge => 0,
+      :enjoyJudge => 0,
+      :response => "json"
+    }
+
+    response = RestClient.post(@face_detection_uri.to_s, options, :content_type => 'multipart/form-data')
+
+    hash = JSON.parser.new(response).parse()
+    p hash
   end
 
   ###   画像認識要求   ###
   def req_ocr(picture)
-    @uri.query = 'APIKEY=' + API_KEY
+    @document_uri.query = 'APIKEY=' + API_KEY
 
     response = RestClient.post(
-      @uri.to_s,
+      @document_uri.to_s,
       {:image => File.open(picture),
        :lang => 'jpn'
     },
@@ -30,10 +49,10 @@ class DocomoAPI
 
   ###   画像認識結果取得   ###
   def get_ocr
-    @uri.path += "/" +  @id
+    @document_uri.path += "/" +  @id
 
     loop do
-      result = RestClient.get(@uri.to_s)
+      result = RestClient.get(@document_uri.to_s)
       @hash = JSON.parser.new(result).parse()
       # 処理に成功した場合のみ処理を続行
       if @hash['job']['@status']=="success"
