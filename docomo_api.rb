@@ -25,9 +25,8 @@ class DocomoAPI
     }
 
     response = RestClient.post(@face_detection_uri.to_s, options, :content_type => 'multipart/form-data')
-
-    hash = JSON.parser.new(response).parse()
-    p hash
+    data = JSON.parser.new(response).parse()['results']['faceRecognition']
+    {data: data, status: check_status(data)}
   end
 
   ###   画像認識要求   ###
@@ -73,6 +72,18 @@ class DocomoAPI
   end
 
   private
+
+  def check_status(data)
+    error = data['errorInfo']
+    if error == ""
+      "ok"
+    elsif error == "NoFace"
+      "no_face"
+    else
+      "error"
+    end
+  end
+
   # 文章をgrepで整形
   def pattern(str)
     str.gsub!(/[旧碑〇丨|I）}]/,
