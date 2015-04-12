@@ -12,6 +12,8 @@ class DocomoAPI
     @face_detection_uri = URI('https://api.apigw.smt.docomo.ne.jp/puxImageRecognition/v1/faceDetection')
   end
 
+  # Return docomo face detection API result
+  # @return Hash[data: Hash, status: String]
   def req_face_detection(picture)
     @face_detection_uri.query = 'APIKEY=' + API_KEY
     options = {
