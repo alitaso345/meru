@@ -60,7 +60,7 @@ class DocomoAPI
 
     status = check_ocr_status(JSON.parser.new(@result).parse())
     data = JSON.parser.new(@result).parse()
-    {data: data, status: status}
+    {:data => data, :status => status}
   end
 
   private
