@@ -6,7 +6,8 @@ require 'date'
 API_KEY = ENV['DOCOMO_API_KEY']
 
 class DocomoAPI
-  def initialize
+  def initialize(file)
+    @file = file
     @id = 0
     @document_uri = URI('https://api.apigw.smt.docomo.ne.jp/characterRecognition/v1/document')
     @face_detection_uri = URI('https://api.apigw.smt.docomo.ne.jp/puxImageRecognition/v1/faceDetection')
@@ -14,10 +15,10 @@ class DocomoAPI
 
   # Return docomo face detection API result
   # @return Hash[data: Hash, status: String]
-  def req_face_detection(picture)
+  def req_face_detection
     @face_detection_uri.query = 'APIKEY=' + API_KEY
     options = {
-      :inputFile => picture,
+      :inputFile => @file,
       :optionFlgMinFaceWidth => 1,
       :blinkJudge => 0,
       :angleJudgej => 0,
@@ -28,20 +29,18 @@ class DocomoAPI
 
     response = RestClient.post(@face_detection_uri.to_s, options, :content_type => 'multipart/form-data')
     data = JSON.parser.new(response).parse()['results']['faceRecognition']
-    {data: data, status: check_status(data)}
+    {data: data, status: check_face_status(data)}
   end
 
   ###   画像認識要求   ###
-  def req_ocr(picture)
+  def req_ocr
     @document_uri.query = 'APIKEY=' + API_KEY
 
-    response = RestClient.post(
-      @document_uri.to_s,
-      {:image => File.open(picture),
-       :lang => 'jpn'
-    },
-    :content_type => 'multipart/form-data'
-    )
+    options = {
+      :image => File.open("./image/servise-time.jpg"), 
+      :lang => 'jpn'
+    }
+    response = RestClient.post(@document_uri.to_s, options, :content_type => 'multipart/form-data')
 
     # 得られた結果からidのみ出力
     hash = JSON.parser.new(response).parse()
@@ -53,32 +52,33 @@ class DocomoAPI
     @document_uri.path += "/" +  @id
 
     loop do
-      result = RestClient.get(@document_uri.to_s)
-      @hash = JSON.parser.new(result).parse()
-      # 処理に成功した場合のみ処理を続行
-      if @hash['job']['@status']=="success"
-        break
-      elsif @hash['job']['@status']!="process"
-        p "失敗もしくは削除済みです"
-        exit
-      end
-      sleep(0.5)#連続してRestClientすると怒られるのでお休み
+      @result = RestClient.get(@document_uri.to_s)
+      status = check_ocr_status(JSON.parser.new(@result).parse())
+      sleep 0.5
+      break if status != "process"
     end
 
-    # 得られたjsonのうち@textのみ出力
-    text =  @hash['lines']['line']   
-    text.each do |text|
-      # pattern(text['@text']) rescue nil
-      p jpndate(pattern(text['@text'])) rescue nil
-    end
+    status = check_ocr_status(JSON.parser.new(@result).parse())
+    data = JSON.parser.new(@result).parse()
+    {data: data, status: status}
   end
 
   private
+  def check_ocr_status(data)
+    status = data['job']['@status']
+    if status == "success"
+      "success"
+    elsif status == "process"
+      "process"
+    else
+      status
+    end
+  end
 
-  def check_status(data)
+  def check_face_status(data)
     error = data['errorInfo']
     if error == ""
-      "ok"
+      "success"
     elsif error == "NoFace"
       "no_face"
     else
